@@ -100,7 +100,7 @@ function YearSection({
                         <div className="flex items-center gap-1">
                           <Badge variant="outline" className="text-[8px] px-1 py-0 h-3.5">{item.pricingModel}</Badge>
                           {item.source === 'hubspot' && (
-                            <Badge className="text-[8px] px-1 py-0 h-3.5 bg-orange-100 text-orange-700">HS</Badge>
+                            <Badge className="text-[8px] px-1 py-0 h-3.5 bg-warning/20 text-warning-foreground">HS</Badge>
                           )}
                           {!item.recurring && year === 1 && (
                             <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5">One-time</Badge>
