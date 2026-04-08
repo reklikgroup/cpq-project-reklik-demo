@@ -205,9 +205,9 @@ function YearSection({
                     {/* Year Adj display */}
                     {applyAdj && (
                       <td className="px-2 py-2 text-center text-[10px] text-muted-foreground">
-                        {yearAdj.increasePct > 0 && <span className="text-green-600">+{yearAdj.increasePct}%</span>}
+                        {yearAdj.increasePct > 0 && <span className="text-success">+{yearAdj.increasePct}%</span>}
                         {yearAdj.increasePct > 0 && yearAdj.discountPct > 0 && ' / '}
-                        {yearAdj.discountPct > 0 && <span className="text-red-500">-{yearAdj.discountPct}%</span>}
+                        {yearAdj.discountPct > 0 && <span className="text-destructive">-{yearAdj.discountPct}%</span>}
                         {!yearAdj.increasePct && !yearAdj.discountPct && '—'}
                       </td>
                     )}
