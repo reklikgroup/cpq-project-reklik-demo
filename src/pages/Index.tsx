@@ -18,6 +18,7 @@ const Index = () => {
     updateYearAdjustment,
     addLineItem,
     updateLineItem,
+    updateLineItemYear,
     removeLineItem,
     setNotes,
     getYearItems,
@@ -69,6 +70,7 @@ const Index = () => {
             getYearItems={getYearItems}
             getYearSubtotal={getYearSubtotal}
             onUpdateLineItem={updateLineItem}
+            onUpdateLineItemYear={updateLineItemYear}
             onRemoveLineItem={removeLineItem}
             allSkuIds={allSkuIds}
           />

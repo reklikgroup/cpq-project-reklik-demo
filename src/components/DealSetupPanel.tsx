@@ -94,51 +94,48 @@ export function DealSetupPanel({ deal, onUpdateDeal, onUpdateYearAdj }: DealSetu
       </div>
 
       {/* Year Adjustments */}
-      {deal.termYears > 1 && (
-        <div className="space-y-3">
-          <Label className="text-xs text-muted-foreground">Year-Level Adjustments</Label>
-          {Array.from({ length: deal.termYears }, (_, i) => i + 1).map(yr => {
-            if (yr === 1) return null;
-            const adj = deal.yearAdjustments[yr];
-            return (
-              <div key={yr} className="bg-muted/50 rounded-md p-3 space-y-2">
-                <span className="text-xs font-semibold">Year {yr}</span>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">Discount %</Label>
-                    <Input
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={adj.discountPct || ''}
-                      onChange={e => onUpdateYearAdj(yr, { discountPct: parseFloat(e.target.value) || 0 })}
-                      className="h-8 text-xs"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">Increase %</Label>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={adj.increasePct || ''}
-                      onChange={e => onUpdateYearAdj(yr, { increasePct: parseFloat(e.target.value) || 0 })}
-                      className="h-8 text-xs"
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`applyAll-${yr}`}
-                    checked={adj.applyToAll}
-                    onCheckedChange={(checked) => onUpdateYearAdj(yr, { applyToAll: !!checked })}
+      <div className="space-y-3">
+        <Label className="text-xs text-muted-foreground">Year-Level Adjustments</Label>
+        {Array.from({ length: deal.termYears }, (_, i) => i + 1).map(yr => {
+          const adj = deal.yearAdjustments[yr];
+          return (
+            <div key={yr} className="bg-muted/50 rounded-md p-3 space-y-2">
+              <span className="text-xs font-semibold">Year {yr}</span>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-[10px] text-muted-foreground">Discount %</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={adj.discountPct || ''}
+                    onChange={e => onUpdateYearAdj(yr, { discountPct: parseFloat(e.target.value) || 0 })}
+                    className="h-8 text-xs"
                   />
-                  <label htmlFor={`applyAll-${yr}`} className="text-xs text-muted-foreground">Apply to all lines</label>
+                </div>
+                <div>
+                  <Label className="text-[10px] text-muted-foreground">Increase %</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={adj.increasePct || ''}
+                    onChange={e => onUpdateYearAdj(yr, { increasePct: parseFloat(e.target.value) || 0 })}
+                    className="h-8 text-xs"
+                  />
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={`applyAll-${yr}`}
+                  checked={adj.applyToAll}
+                  onCheckedChange={(checked) => onUpdateYearAdj(yr, { applyToAll: !!checked })}
+                />
+                <label htmlFor={`applyAll-${yr}`} className="text-xs text-muted-foreground">Apply to all lines</label>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

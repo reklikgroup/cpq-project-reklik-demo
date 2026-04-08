@@ -59,6 +59,12 @@ export interface YearAdjustment {
   applyToAll: boolean;
 }
 
+export interface LineYearOverride {
+  manualDiscountPct?: number;
+  manualIncreasePct?: number;
+  unitPriceOverride?: number | null;
+}
+
 export interface QuoteLineItem {
   id: string;
   skuId: string;
@@ -82,6 +88,7 @@ export interface QuoteLineItem {
   variableUnit?: string;
   priceNew?: number;
   priceRepeat?: number;
+  yearOverrides: Record<number, LineYearOverride>;
 }
 
 export interface DealSetup {

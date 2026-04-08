@@ -41,7 +41,6 @@ export function exportQuotePDF(
     if (items.length === 0) continue;
 
     const yearAdj = deal.yearAdjustments[yr] || { discountPct: 0, increasePct: 0, applyToAll: true };
-    const applyAdj = yr > 1;
 
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
@@ -50,8 +49,7 @@ export function exportQuotePDF(
     y += 4;
 
     const tableData = items.map(item => {
-      const unitPrice = getUnitPrice(item, deal.dealType);
-      const total = calculateLineTotal(item, yearAdj, applyAdj, deal.dealType);
+      const total = calculateLineTotal(item, yearAdj, yr, deal.dealType);
       const variant = item.selectedVariantId
         ? item.variants.find(v => v.id === item.selectedVariantId)?.name || '—'
         : '—';
@@ -61,8 +59,8 @@ export function exportQuotePDF(
         item.skuName + oneTime,
         variant,
         item.pricingModel === 'per_seat' || item.pricingModel === 'variable' ? item.quantity.toString() : '1',
-        formatCurrency(unitPrice),
-        applyAdj ? `+${yearAdj.increasePct}% / -${yearAdj.discountPct}%` : '—',
+        formatCurrency(getUnitPrice(item, deal.dealType, yr)),
+        yearAdj.increasePct || yearAdj.discountPct ? `+${yearAdj.increasePct}% / -${yearAdj.discountPct}%` : '—',
         item.manualIncreasePct ? `+${item.manualIncreasePct}%` : '—',
         item.manualDiscountPct ? `-${item.manualDiscountPct}%` : '—',
         formatCurrency(total),
