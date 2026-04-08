@@ -1,43 +1,43 @@
 {
-  "categories": ["Platform", "Services", "Add-ons", "Training", "Storage & Infrastructure"],
+  "categories": ["Design Platform", "Collaboration", "Services", "Add-ons", "Asset Management"],
   "products": [
     {
       "id": "prod-001",
-      "name": "Core Platform License",
-      "category": "Platform",
+      "name": "DesignStudio Pro",
+      "category": "Design Platform",
       "type": "base",
       "skus": [
         {
           "id": "sku-001",
-          "sku_code": "PLAT-CORE-SEAT",
-          "name": "Core Platform — Per Seat",
+          "sku_code": "DSP-SEAT",
+          "name": "DesignStudio Pro — Per Seat",
           "pricing_model": "per_seat",
-          "base_price": 120,
+          "base_price": 89,
           "currency": "USD",
           "active": true,
           "recurring": true,
           "variants": [],
           "volume_tiers": [
-            { "min_qty": 1, "max_qty": 10, "unit_price": 120 },
-            { "min_qty": 11, "max_qty": 50, "unit_price": 105 },
-            { "min_qty": 51, "max_qty": 200, "unit_price": 90 },
-            { "min_qty": 201, "max_qty": 999999, "unit_price": 75 }
+            { "min_qty": 1, "max_qty": 10, "unit_price": 89 },
+            { "min_qty": 11, "max_qty": 50, "unit_price": 79 },
+            { "min_qty": 51, "max_qty": 200, "unit_price": 65 },
+            { "min_qty": 201, "max_qty": 999999, "unit_price": 52 }
           ],
           "dependencies": []
         },
         {
           "id": "sku-002",
-          "sku_code": "PLAT-CORE-ENT",
-          "name": "Core Platform — Enterprise",
+          "sku_code": "DSP-ENT",
+          "name": "DesignStudio Pro — Enterprise License",
           "pricing_model": "fixed",
-          "base_price": 48000,
+          "base_price": 42000,
           "currency": "USD",
           "active": true,
           "recurring": true,
           "variants": [
-            { "id": "var-001", "name": "Standard", "price": 48000 },
-            { "id": "var-002", "name": "Professional", "price": 72000 },
-            { "id": "var-003", "name": "Enterprise Plus", "price": 120000 }
+            { "id": "var-001", "name": "Growth", "price": 42000 },
+            { "id": "var-002", "name": "Scale", "price": 78000 },
+            { "id": "var-003", "name": "Unlimited", "price": 145000 }
           ],
           "volume_tiers": [],
           "dependencies": []
@@ -46,43 +46,118 @@
     },
     {
       "id": "prod-002",
-      "name": "Analytics Module",
-      "category": "Platform",
+      "name": "BrandKit Manager",
+      "category": "Design Platform",
       "type": "addon",
       "skus": [
         {
           "id": "sku-003",
-          "sku_code": "PLAT-ANALYTICS",
-          "name": "Advanced Analytics",
-          "pricing_model": "per_seat",
-          "base_price": 35,
+          "sku_code": "BKM-ANNUAL",
+          "name": "BrandKit Manager — Annual",
+          "pricing_model": "fixed",
+          "base_price": 6000,
           "currency": "USD",
           "active": true,
           "recurring": true,
           "variants": [],
-          "volume_tiers": [
-            { "min_qty": 1, "max_qty": 25, "unit_price": 35 },
-            { "min_qty": 26, "max_qty": 100, "unit_price": 28 },
-            { "min_qty": 101, "max_qty": 999999, "unit_price": 22 }
-          ],
+          "volume_tiers": [],
           "dependencies": [
-            { "depends_on_sku_id": "sku-001", "type": "soft", "message": "Advanced Analytics works best with Core Platform seats" }
+            { "depends_on_sku_id": "sku-001", "type": "soft", "message": "BrandKit Manager is designed to work alongside DesignStudio Pro seats" }
           ]
         }
       ]
     },
     {
       "id": "prod-003",
-      "name": "Implementation Services",
-      "category": "Services",
+      "name": "Template Builder",
+      "category": "Design Platform",
       "type": "addon",
       "skus": [
         {
           "id": "sku-004",
-          "sku_code": "SVC-IMPL-STD",
-          "name": "Standard Implementation",
+          "sku_code": "TMB-SEAT",
+          "name": "Template Builder — Per Seat",
+          "pricing_model": "per_seat",
+          "base_price": 29,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [
+            { "min_qty": 1, "max_qty": 25, "unit_price": 29 },
+            { "min_qty": 26, "max_qty": 100, "unit_price": 24 },
+            { "min_qty": 101, "max_qty": 999999, "unit_price": 18 }
+          ],
+          "dependencies": [
+            { "depends_on_sku_id": "sku-001", "type": "hard", "message": "Template Builder requires an active DesignStudio Pro license" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod-004",
+      "name": "Campaign Canvas",
+      "category": "Collaboration",
+      "type": "base",
+      "skus": [
+        {
+          "id": "sku-005",
+          "sku_code": "CC-ANNUAL",
+          "name": "Campaign Canvas — Annual Platform",
           "pricing_model": "fixed",
-          "base_price": 15000,
+          "base_price": 18000,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [
+            { "id": "var-004", "name": "Starter", "price": 18000 },
+            { "id": "var-005", "name": "Professional", "price": 36000 },
+            { "id": "var-006", "name": "Agency", "price": 60000 }
+          ],
+          "volume_tiers": [],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-005",
+      "name": "Review & Approval Workflows",
+      "category": "Collaboration",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-006",
+          "sku_code": "RAW-SEAT",
+          "name": "Review & Approval — Per Seat",
+          "pricing_model": "per_seat",
+          "base_price": 15,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [
+            { "min_qty": 1, "max_qty": 20, "unit_price": 15 },
+            { "min_qty": 21, "max_qty": 100, "unit_price": 12 },
+            { "min_qty": 101, "max_qty": 999999, "unit_price": 9 }
+          ],
+          "dependencies": [
+            { "depends_on_sku_id": "sku-005", "type": "soft", "message": "Review & Approval is typically used with Campaign Canvas" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod-006",
+      "name": "Onboarding — DesignStudio",
+      "category": "Services",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-007",
+          "sku_code": "SVC-ONB-STD",
+          "name": "Standard Onboarding Package",
+          "pricing_model": "fixed",
+          "base_price": 5000,
           "currency": "USD",
           "active": true,
           "recurring": false,
@@ -91,11 +166,11 @@
           "dependencies": []
         },
         {
-          "id": "sku-005",
-          "sku_code": "SVC-IMPL-PREM",
-          "name": "Premium Implementation",
+          "id": "sku-008",
+          "sku_code": "SVC-ONB-PREM",
+          "name": "Premium Onboarding Package",
           "pricing_model": "fixed",
-          "base_price": 35000,
+          "base_price": 12000,
           "currency": "USD",
           "active": true,
           "recurring": false,
@@ -106,140 +181,41 @@
       ]
     },
     {
-      "id": "prod-004",
-      "name": "Consulting Hours",
-      "category": "Services",
-      "type": "addon",
-      "skus": [
-        {
-          "id": "sku-006",
-          "sku_code": "SVC-CONSULT-HR",
-          "name": "Consulting Hours Pack",
-          "pricing_model": "tiered_hours",
-          "currency": "USD",
-          "active": true,
-          "recurring": false,
-          "variants": [],
-          "volume_tiers": [
-            { "hours": 10, "cost": 2500 },
-            { "hours": 25, "cost": 5625 },
-            { "hours": 50, "cost": 10000 },
-            { "hours": 100, "cost": 17500 }
-          ],
-          "dependencies": []
-        }
-      ]
-    },
-    {
-      "id": "prod-005",
-      "name": "LMS — Learning Management",
-      "category": "Platform",
-      "type": "base",
-      "skus": [
-        {
-          "id": "sku-007",
-          "sku_code": "PLAT-LMS-LEARN",
-          "name": "LMS — Per Learner",
-          "pricing_model": "tiered_learners",
-          "currency": "USD",
-          "active": true,
-          "recurring": true,
-          "variants": [],
-          "volume_tiers": [
-            { "learners": 100, "total_price": 5000, "price_per_learner": 50 },
-            { "learners": 500, "total_price": 17500, "price_per_learner": 35 },
-            { "learners": 1000, "total_price": 25000, "price_per_learner": 25 },
-            { "learners": 5000, "total_price": 75000, "price_per_learner": 15 }
-          ],
-          "dependencies": []
-        }
-      ]
-    },
-    {
-      "id": "prod-006",
-      "name": "Sponsorship Management",
-      "category": "Platform",
-      "type": "addon",
-      "skus": [
-        {
-          "id": "sku-008",
-          "sku_code": "PLAT-SPONSOR",
-          "name": "Sponsorship Module",
-          "pricing_model": "tiered_sponsors",
-          "currency": "USD",
-          "active": true,
-          "recurring": true,
-          "variants": [],
-          "volume_tiers": [
-            { "sponsors": 5, "total_price": 3000, "price_per_sponsor": 600 },
-            { "sponsors": 15, "total_price": 7500, "price_per_sponsor": 500 },
-            { "sponsors": 50, "total_price": 17500, "price_per_sponsor": 350 }
-          ],
-          "dependencies": []
-        }
-      ]
-    },
-    {
       "id": "prod-007",
-      "name": "Product Catalog Module",
-      "category": "Add-ons",
+      "name": "Implementation Services",
+      "category": "Services",
       "type": "addon",
       "skus": [
         {
           "id": "sku-009",
-          "sku_code": "ADD-PRODCAT",
-          "name": "Product Catalog — Tiered",
-          "pricing_model": "tiered_products",
+          "sku_code": "SVC-IMPL-BASIC",
+          "name": "Basic Implementation",
+          "pricing_model": "fixed",
+          "base_price": 8500,
           "currency": "USD",
           "active": true,
-          "recurring": true,
+          "recurring": false,
           "variants": [],
-          "volume_tiers": [
-            { "products": 10, "total_price": 2400, "price_per_product": 240 },
-            { "products": 50, "total_price": 9000, "price_per_product": 180 },
-            { "products": 200, "total_price": 24000, "price_per_product": 120 }
-          ],
-          "dependencies": [
-            { "depends_on_sku_id": "sku-001", "type": "soft", "message": "Product Catalog requires Core Platform for full functionality" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "prod-008",
-      "name": "Cloud Storage",
-      "category": "Storage & Infrastructure",
-      "type": "addon",
-      "skus": [
+          "volume_tiers": [],
+          "dependencies": []
+        },
         {
           "id": "sku-010",
-          "sku_code": "INFRA-STORAGE",
-          "name": "Cloud Storage Plan",
-          "pricing_model": "tiered_storage",
+          "sku_code": "SVC-IMPL-ENT",
+          "name": "Enterprise Implementation",
+          "pricing_model": "fixed",
+          "base_price": 28000,
           "currency": "USD",
           "active": true,
-          "recurring": true,
+          "recurring": false,
           "variants": [],
-          "volume_tiers": [
-            { "storage_gb": 50, "price": 600 },
-            { "storage_gb": 200, "price": 1800 },
-            { "storage_gb": 1000, "price": 6000 },
-            { "storage_gb": 5000, "price": 18000 }
-          ],
+          "volume_tiers": [],
           "dependencies": []
-        }
-      ]
-    },
-    {
-      "id": "prod-009",
-      "name": "Custom Development",
-      "category": "Services",
-      "type": "addon",
-      "skus": [
+        },
         {
           "id": "sku-011",
-          "sku_code": "SVC-CUSTOM-DEV",
-          "name": "Custom Development",
+          "sku_code": "SVC-IMPL-CUSTOM",
+          "name": "Custom Implementation — Scoped",
           "pricing_model": "custom",
           "base_price": 0,
           "currency": "USD",
@@ -252,88 +228,43 @@
       ]
     },
     {
-      "id": "prod-010",
-      "name": "API Access",
-      "category": "Add-ons",
-      "type": "addon",
-      "skus": [
-        {
-          "id": "sku-012",
-          "sku_code": "ADD-API",
-          "name": "API Access — Variable Calls",
-          "pricing_model": "variable",
-          "base_price": 0.005,
-          "variable_unit": "API calls (thousands)",
-          "currency": "USD",
-          "active": true,
-          "recurring": true,
-          "variants": [],
-          "volume_tiers": [],
-          "dependencies": [
-            { "depends_on_sku_id": "sku-001", "type": "hard", "message": "API Access requires an active Core Platform License" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "prod-011",
-      "name": "Onboarding & Training",
-      "category": "Training",
-      "type": "addon",
-      "skus": [
-        {
-          "id": "sku-013",
-          "sku_code": "TRN-ONBOARD",
-          "name": "Onboarding Training",
-          "pricing_model": "deal_type_based",
-          "price_new": 5000,
-          "price_repeat": 2500,
-          "currency": "USD",
-          "active": true,
-          "recurring": false,
-          "variants": [],
-          "volume_tiers": [],
-          "dependencies": []
-        }
-      ]
-    },
-    {
-      "id": "prod-012",
-      "name": "Premium Support",
+      "id": "prod-008",
+      "name": "Training Hours",
       "category": "Services",
       "type": "addon",
       "skus": [
         {
-          "id": "sku-014",
-          "sku_code": "SVC-SUPPORT-PREM",
-          "name": "Premium Support Plan",
-          "pricing_model": "fixed",
-          "base_price": 12000,
+          "id": "sku-012",
+          "sku_code": "SVC-TRAIN-HR",
+          "name": "Training Hours Pack",
+          "pricing_model": "tiered_hours",
           "currency": "USD",
           "active": true,
-          "recurring": true,
-          "variants": [
-            { "id": "var-004", "name": "Business Hours", "price": 12000 },
-            { "id": "var-005", "name": "24/7 Support", "price": 24000 }
+          "recurring": false,
+          "variants": [],
+          "volume_tiers": [
+            { "hours": 5, "cost": 1500 },
+            { "hours": 10, "cost": 2750 },
+            { "hours": 20, "cost": 4800 },
+            { "hours": 40, "cost": 8000 }
           ],
-          "volume_tiers": [],
           "dependencies": []
         }
       ]
     },
     {
-      "id": "prod-013",
+      "id": "prod-009",
       "name": "Data Migration",
       "category": "Services",
       "type": "addon",
       "skus": [
         {
-          "id": "sku-015",
-          "sku_code": "SVC-MIGRATION",
-          "name": "Data Migration Service",
+          "id": "sku-013",
+          "sku_code": "SVC-MIGRATE",
+          "name": "Asset Migration Service",
           "pricing_model": "variable",
-          "base_price": 500,
-          "variable_unit": "tables",
+          "base_price": 250,
+          "variable_unit": "asset libraries",
           "currency": "USD",
           "active": true,
           "recurring": false,
@@ -344,48 +275,175 @@
       ]
     },
     {
-      "id": "prod-014",
-      "name": "SSO Integration",
-      "category": "Add-ons",
+      "id": "prod-010",
+      "name": "Onboarding Training",
+      "category": "Services",
       "type": "addon",
       "skus": [
         {
-          "id": "sku-016",
-          "sku_code": "ADD-SSO",
-          "name": "SSO / SAML Integration",
-          "pricing_model": "fixed",
-          "base_price": 8000,
+          "id": "sku-014",
+          "sku_code": "SVC-ONB-DEAL",
+          "name": "Onboarding Training — Deal Based",
+          "pricing_model": "deal_type_based",
+          "price_new": 4500,
+          "price_repeat": 2000,
+          "currency": "USD",
+          "active": true,
+          "recurring": false,
+          "variants": [],
+          "volume_tiers": [],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-011",
+      "name": "Cloud Asset Storage",
+      "category": "Asset Management",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-015",
+          "sku_code": "AST-STORAGE",
+          "name": "Cloud Asset Storage",
+          "pricing_model": "tiered_storage",
           "currency": "USD",
           "active": true,
           "recurring": true,
           "variants": [],
-          "volume_tiers": [],
+          "volume_tiers": [
+            { "storage_gb": 25, "price": 360 },
+            { "storage_gb": 100, "price": 1080 },
+            { "storage_gb": 500, "price": 3600 },
+            { "storage_gb": 2000, "price": 9600 }
+          ],
           "dependencies": [
-            { "depends_on_sku_id": "sku-001", "type": "soft", "message": "SSO is typically paired with Core Platform seats" }
+            { "depends_on_sku_id": "sku-001", "type": "soft", "message": "Cloud Asset Storage is typically paired with a DesignStudio Pro license" }
           ]
         }
       ]
     },
     {
-      "id": "prod-015",
-      "name": "Compliance Add-on",
-      "category": "Add-ons",
+      "id": "prod-012",
+      "name": "Digital Asset Library",
+      "category": "Asset Management",
       "type": "addon",
       "skus": [
         {
-          "id": "sku-017",
-          "sku_code": "ADD-COMPLIANCE",
-          "name": "Compliance & Audit Pack",
+          "id": "sku-016",
+          "sku_code": "AST-DAM",
+          "name": "Digital Asset Library — Annual",
           "pricing_model": "tiered_fixed",
           "currency": "USD",
           "active": true,
           "recurring": true,
           "variants": [],
           "volume_tiers": [
-            { "tier": "Starter", "total_price": 6000 },
-            { "tier": "Professional", "total_price": 15000 },
-            { "tier": "Enterprise", "total_price": 30000 }
+            { "tier": "Starter (1,000 assets)", "total_price": 3600 },
+            { "tier": "Professional (10,000 assets)", "total_price": 9600 },
+            { "tier": "Enterprise (Unlimited)", "total_price": 24000 }
           ],
+          "dependencies": [
+            { "depends_on_sku_id": "sku-015", "type": "soft", "message": "Digital Asset Library works best with Cloud Asset Storage" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod-013",
+      "name": "API & Integrations",
+      "category": "Add-ons",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-017",
+          "sku_code": "ADD-API",
+          "name": "API Access — Per 1K Calls",
+          "pricing_model": "variable",
+          "base_price": 8,
+          "variable_unit": "thousand API calls/mo",
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [],
+          "dependencies": [
+            { "depends_on_sku_id": "sku-001", "type": "hard", "message": "API Access requires an active DesignStudio Pro license" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod-014",
+      "name": "SSO & Security Pack",
+      "category": "Add-ons",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-018",
+          "sku_code": "ADD-SSO",
+          "name": "SSO / SAML Integration",
+          "pricing_model": "fixed",
+          "base_price": 7200,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [],
+          "dependencies": [
+            { "depends_on_sku_id": "sku-001", "type": "soft", "message": "SSO is typically paired with DesignStudio Pro seats" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod-015",
+      "name": "White-Label Export",
+      "category": "Add-ons",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-019",
+          "sku_code": "ADD-WHITELABEL",
+          "name": "White-Label Export Module",
+          "pricing_model": "fixed",
+          "base_price": 15000,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [
+            { "id": "var-007", "name": "Single Brand", "price": 15000 },
+            { "id": "var-008", "name": "Multi-Brand (up to 5)", "price": 30000 },
+            { "id": "var-009", "name": "Unlimited Brands", "price": 50000 }
+          ],
+          "volume_tiers": [],
+          "dependencies": [
+            { "depends_on_sku_id": "sku-003", "type": "soft", "message": "White-Label Export works best with BrandKit Manager for brand consistency" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod-016",
+      "name": "Premium Support",
+      "category": "Services",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-020",
+          "sku_code": "SVC-SUPPORT",
+          "name": "Premium Support Plan",
+          "pricing_model": "fixed",
+          "base_price": 9600,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [
+            { "id": "var-010", "name": "Business Hours (9-5)", "price": 9600 },
+            { "id": "var-011", "name": "Extended (7am-10pm)", "price": 16800 },
+            { "id": "var-012", "name": "24/7 Priority", "price": 30000 }
+          ],
+          "volume_tiers": [],
           "dependencies": []
         }
       ]
