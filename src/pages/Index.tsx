@@ -70,6 +70,7 @@ const Index = () => {
             getYearItems={getYearItems}
             getYearSubtotal={getYearSubtotal}
             onUpdateLineItem={updateLineItem}
+            onUpdateLineItemYear={updateLineItemYear}
             onRemoveLineItem={removeLineItem}
             allSkuIds={allSkuIds}
           />
