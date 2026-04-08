@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import type { QuoteLineItem, DealSetup, YearAdjustment } from '@/types/quote';
+import type { QuoteLineItem, DealSetup, LineYearOverride } from '@/types/quote';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import {
@@ -22,6 +21,7 @@ interface LiveQuoteProps {
   getYearItems: (year: number) => QuoteLineItem[];
   getYearSubtotal: (year: number) => number;
   onUpdateLineItem: (id: string, updates: Partial<QuoteLineItem>) => void;
+  onUpdateLineItemYear: (id: string, year: number, updates: Partial<LineYearOverride>) => void;
   onRemoveLineItem: (id: string) => void;
   allSkuIds: Set<string>;
 }
@@ -32,6 +32,7 @@ function YearSection({
   deal,
   subtotal,
   onUpdateLineItem,
+  onUpdateLineItemYear,
   onRemoveLineItem,
   allSkuIds,
 }: {
@@ -40,12 +41,13 @@ function YearSection({
   deal: DealSetup;
   subtotal: number;
   onUpdateLineItem: (id: string, updates: Partial<QuoteLineItem>) => void;
+  onUpdateLineItemYear: (id: string, year: number, updates: Partial<LineYearOverride>) => void;
   onRemoveLineItem: (id: string) => void;
   allSkuIds: Set<string>;
 }) {
   const [open, setOpen] = useState(true);
   const yearAdj = deal.yearAdjustments[year] || { discountPct: 0, increasePct: 0, applyToAll: true };
-  const applyAdj = year > 1;
+  const hasYearAdj = yearAdj.discountPct > 0 || yearAdj.increasePct > 0;
 
   return (
     <div className="border rounded-lg overflow-hidden">
@@ -70,8 +72,8 @@ function YearSection({
                 <th className="text-left px-2 py-2 font-medium text-muted-foreground w-28">Tier / Variant</th>
                 <th className="text-center px-2 py-2 font-medium text-muted-foreground w-16">Qty</th>
                 <th className="text-right px-2 py-2 font-medium text-muted-foreground w-24">Unit $</th>
-                {applyAdj && <th className="text-center px-2 py-2 font-medium text-muted-foreground w-16">Yr Adj</th>}
-                {applyAdj && !yearAdj.applyToAll && (
+                {hasYearAdj && <th className="text-center px-2 py-2 font-medium text-muted-foreground w-16">Yr Adj</th>}
+                {hasYearAdj && !yearAdj.applyToAll && (
                   <th className="text-center px-2 py-2 font-medium text-muted-foreground w-14">Opt-In</th>
                 )}
                 <th className="text-center px-2 py-2 font-medium text-muted-foreground w-16">Inc %</th>
@@ -82,12 +84,17 @@ function YearSection({
             </thead>
             <tbody>
               {items.map(item => {
-                const unitPrice = getUnitPrice(item, deal.dealType);
-                const total = calculateLineTotal(item, yearAdj, applyAdj, deal.dealType);
-                const hasOverride = item.unitPriceOverride !== null;
+                const yearOvr = item.yearOverrides?.[year] || {};
+                const unitPrice = getUnitPrice(item, deal.dealType, year);
+                const total = calculateLineTotal(item, yearAdj, year, deal.dealType);
+                const hasOverride = yearOvr.unitPriceOverride !== undefined && yearOvr.unitPriceOverride !== null;
                 const isTiered = TIERED_MODELS.includes(item.pricingModel);
                 const buckets = isTiered ? parseTierBuckets(item.pricingModel, item.volumeTiers) : [];
                 const isQtyEditable = item.pricingModel === 'per_seat' || item.pricingModel === 'variable';
+                const calcPrice = getCalculatedUnitPrice(item, deal.dealType);
+
+                const incPct = yearOvr.manualIncreasePct ?? item.manualIncreasePct ?? 0;
+                const discPct = yearOvr.manualDiscountPct ?? item.manualDiscountPct ?? 0;
 
                 // Dependency warnings
                 const unmetDeps = item.dependencies.filter(d => !allSkuIds.has(d.depends_on_sku_id));
@@ -169,31 +176,21 @@ function YearSection({
                       )}
                     </td>
 
-                    {/* Unit Price */}
+                    {/* Unit Price — always editable */}
                     <td className="px-2 py-2 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        {item.pricingModel === 'custom' || hasOverride ? (
-                          <Input
-                            type="number"
-                            min={0}
-                            step={0.01}
-                            value={unitPrice}
-                            onChange={e => onUpdateLineItem(item.id, { unitPriceOverride: parseFloat(e.target.value) || 0 })}
-                            className={cn('h-7 w-20 text-right text-xs', hasOverride && 'border-warning text-warning-foreground')}
-                          />
-                        ) : (
-                          <span
-                            className="cursor-pointer hover:text-primary"
-                            onDoubleClick={() => onUpdateLineItem(item.id, { unitPriceOverride: unitPrice })}
-                            title="Double-click to override"
-                          >
-                            {formatCurrency(unitPrice)}
-                          </span>
-                        )}
+                        <Input
+                          type="number"
+                          min={0}
+                          step={0.01}
+                          value={unitPrice}
+                          onChange={e => onUpdateLineItemYear(item.id, year, { unitPriceOverride: parseFloat(e.target.value) || 0 })}
+                          className={cn('h-7 w-20 text-right text-xs', hasOverride && 'border-warning text-warning-foreground')}
+                        />
                         {hasOverride && (
                           <button
-                            onClick={() => onUpdateLineItem(item.id, { unitPriceOverride: null })}
-                            title="Reset to calculated price"
+                            onClick={() => onUpdateLineItemYear(item.id, year, { unitPriceOverride: undefined })}
+                            title={`Reset to ${formatCurrency(calcPrice)}`}
                             className="text-muted-foreground hover:text-foreground"
                           >
                             <RotateCcw className="h-3 w-3" />
@@ -203,17 +200,16 @@ function YearSection({
                     </td>
 
                     {/* Year Adj display */}
-                    {applyAdj && (
+                    {hasYearAdj && (
                       <td className="px-2 py-2 text-center text-[10px] text-muted-foreground">
                         {yearAdj.increasePct > 0 && <span className="text-success">+{yearAdj.increasePct}%</span>}
                         {yearAdj.increasePct > 0 && yearAdj.discountPct > 0 && ' / '}
                         {yearAdj.discountPct > 0 && <span className="text-destructive">-{yearAdj.discountPct}%</span>}
-                        {!yearAdj.increasePct && !yearAdj.discountPct && '—'}
                       </td>
                     )}
 
                     {/* Opt-in checkbox */}
-                    {applyAdj && !yearAdj.applyToAll && (
+                    {hasYearAdj && !yearAdj.applyToAll && (
                       <td className="px-2 py-2 text-center">
                         <Checkbox
                           checked={!item.yearOverride}
@@ -222,25 +218,25 @@ function YearSection({
                       </td>
                     )}
 
-                    {/* Inc % */}
+                    {/* Inc % (year-specific) */}
                     <td className="px-2 py-2">
                       <Input
                         type="number"
                         min={0}
-                        value={item.manualIncreasePct || ''}
-                        onChange={e => onUpdateLineItem(item.id, { manualIncreasePct: parseFloat(e.target.value) || 0 })}
+                        value={incPct || ''}
+                        onChange={e => onUpdateLineItemYear(item.id, year, { manualIncreasePct: parseFloat(e.target.value) || 0 })}
                         className="h-7 w-14 text-center text-xs mx-auto"
                       />
                     </td>
 
-                    {/* Disc % */}
+                    {/* Disc % (year-specific) */}
                     <td className="px-2 py-2">
                       <Input
                         type="number"
                         min={0}
                         max={100}
-                        value={item.manualDiscountPct || ''}
-                        onChange={e => onUpdateLineItem(item.id, { manualDiscountPct: parseFloat(e.target.value) || 0 })}
+                        value={discPct || ''}
+                        onChange={e => onUpdateLineItemYear(item.id, year, { manualDiscountPct: parseFloat(e.target.value) || 0 })}
                         className="h-7 w-14 text-center text-xs mx-auto"
                       />
                     </td>
@@ -277,7 +273,7 @@ function YearSection({
   );
 }
 
-export function LiveQuote({ deal, lineItems, getYearItems, getYearSubtotal, onUpdateLineItem, onRemoveLineItem, allSkuIds }: LiveQuoteProps) {
+export function LiveQuote({ deal, lineItems, getYearItems, getYearSubtotal, onUpdateLineItem, onUpdateLineItemYear, onRemoveLineItem, allSkuIds }: LiveQuoteProps) {
   return (
     <div className="space-y-3">
       {Array.from({ length: deal.termYears }, (_, i) => i + 1).map(yr => (
@@ -288,6 +284,7 @@ export function LiveQuote({ deal, lineItems, getYearItems, getYearSubtotal, onUp
           deal={deal}
           subtotal={getYearSubtotal(yr)}
           onUpdateLineItem={onUpdateLineItem}
+          onUpdateLineItemYear={onUpdateLineItemYear}
           onRemoveLineItem={onRemoveLineItem}
           allSkuIds={allSkuIds}
         />

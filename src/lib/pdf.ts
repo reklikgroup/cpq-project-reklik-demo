@@ -41,7 +41,6 @@ export function exportQuotePDF(
     if (items.length === 0) continue;
 
     const yearAdj = deal.yearAdjustments[yr] || { discountPct: 0, increasePct: 0, applyToAll: true };
-    const applyAdj = yr > 1;
 
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
