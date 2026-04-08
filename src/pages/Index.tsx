@@ -18,6 +18,7 @@ const Index = () => {
     updateYearAdjustment,
     addLineItem,
     updateLineItem,
+    updateLineItemYear,
     removeLineItem,
     setNotes,
     getYearItems,
