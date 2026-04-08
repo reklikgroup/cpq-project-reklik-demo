@@ -110,7 +110,12 @@ export function getCalculatedUnitPrice(item: QuoteLineItem, dealType: DealType):
   return item.baseUnitPrice;
 }
 
-export function getUnitPrice(item: QuoteLineItem, dealType: DealType): number {
+export function getUnitPrice(item: QuoteLineItem, dealType: DealType, year?: number): number {
+  // Check year-specific override first
+  if (year !== undefined && item.yearOverrides?.[year]?.unitPriceOverride !== undefined) {
+    const override = item.yearOverrides[year].unitPriceOverride;
+    if (override !== null) return override;
+  }
   if (item.unitPriceOverride !== null) return item.unitPriceOverride;
   return getCalculatedUnitPrice(item, dealType);
 }
@@ -123,10 +128,10 @@ export function shouldApplyYearAdj(item: QuoteLineItem, yearAdj: YearAdjustment)
 export function calculateLineTotal(
   item: QuoteLineItem,
   yearAdj: YearAdjustment,
-  applyYearAdj: boolean,
+  year: number,
   dealType: DealType
 ): number {
-  const unitPrice = getUnitPrice(item, dealType);
+  const unitPrice = getUnitPrice(item, dealType, year);
 
   // Qty: 1 for tiered/fixed, actual qty for per_seat/variable
   const isQtyBased = item.pricingModel === 'per_seat' || item.pricingModel === 'variable';
@@ -134,15 +139,18 @@ export function calculateLineTotal(
 
   let total = unitPrice * qty;
 
-  // Year-level adjustments
-  if (applyYearAdj && shouldApplyYearAdj(item, yearAdj)) {
+  // Year-level adjustments (apply to all years now)
+  if (shouldApplyYearAdj(item, yearAdj)) {
     total *= (1 + (yearAdj.increasePct || 0) / 100);
     total *= (1 - (yearAdj.discountPct || 0) / 100);
   }
 
-  // Line-level manual adjustments
-  total *= (1 + (item.manualIncreasePct || 0) / 100);
-  total *= (1 - (item.manualDiscountPct || 0) / 100);
+  // Line-level manual adjustments (year-specific)
+  const yearOvr = item.yearOverrides?.[year];
+  const incPct = yearOvr?.manualIncreasePct ?? item.manualIncreasePct ?? 0;
+  const discPct = yearOvr?.manualDiscountPct ?? item.manualDiscountPct ?? 0;
+  total *= (1 + incPct / 100);
+  total *= (1 - discPct / 100);
 
   return Math.round(total * 100) / 100;
 }
