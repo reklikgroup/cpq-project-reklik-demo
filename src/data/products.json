@@ -1,0 +1,394 @@
+{
+  "categories": ["Platform", "Services", "Add-ons", "Training", "Storage & Infrastructure"],
+  "products": [
+    {
+      "id": "prod-001",
+      "name": "Core Platform License",
+      "category": "Platform",
+      "type": "base",
+      "skus": [
+        {
+          "id": "sku-001",
+          "sku_code": "PLAT-CORE-SEAT",
+          "name": "Core Platform — Per Seat",
+          "pricing_model": "per_seat",
+          "base_price": 120,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [
+            { "min_qty": 1, "max_qty": 10, "unit_price": 120 },
+            { "min_qty": 11, "max_qty": 50, "unit_price": 105 },
+            { "min_qty": 51, "max_qty": 200, "unit_price": 90 },
+            { "min_qty": 201, "max_qty": 999999, "unit_price": 75 }
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "sku-002",
+          "sku_code": "PLAT-CORE-ENT",
+          "name": "Core Platform — Enterprise",
+          "pricing_model": "fixed",
+          "base_price": 48000,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [
+            { "id": "var-001", "name": "Standard", "price": 48000 },
+            { "id": "var-002", "name": "Professional", "price": 72000 },
+            { "id": "var-003", "name": "Enterprise Plus", "price": 120000 }
+          ],
+          "volume_tiers": [],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-002",
+      "name": "Analytics Module",
+      "category": "Platform",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-003",
+          "sku_code": "PLAT-ANALYTICS",
+          "name": "Advanced Analytics",
+          "pricing_model": "per_seat",
+          "base_price": 35,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [
+            { "min_qty": 1, "max_qty": 25, "unit_price": 35 },
+            { "min_qty": 26, "max_qty": 100, "unit_price": 28 },
+            { "min_qty": 101, "max_qty": 999999, "unit_price": 22 }
+          ],
+          "dependencies": [
+            { "depends_on_sku_id": "sku-001", "type": "soft", "message": "Advanced Analytics works best with Core Platform seats" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod-003",
+      "name": "Implementation Services",
+      "category": "Services",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-004",
+          "sku_code": "SVC-IMPL-STD",
+          "name": "Standard Implementation",
+          "pricing_model": "fixed",
+          "base_price": 15000,
+          "currency": "USD",
+          "active": true,
+          "recurring": false,
+          "variants": [],
+          "volume_tiers": [],
+          "dependencies": []
+        },
+        {
+          "id": "sku-005",
+          "sku_code": "SVC-IMPL-PREM",
+          "name": "Premium Implementation",
+          "pricing_model": "fixed",
+          "base_price": 35000,
+          "currency": "USD",
+          "active": true,
+          "recurring": false,
+          "variants": [],
+          "volume_tiers": [],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-004",
+      "name": "Consulting Hours",
+      "category": "Services",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-006",
+          "sku_code": "SVC-CONSULT-HR",
+          "name": "Consulting Hours Pack",
+          "pricing_model": "tiered_hours",
+          "currency": "USD",
+          "active": true,
+          "recurring": false,
+          "variants": [],
+          "volume_tiers": [
+            { "hours": 10, "cost": 2500 },
+            { "hours": 25, "cost": 5625 },
+            { "hours": 50, "cost": 10000 },
+            { "hours": 100, "cost": 17500 }
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-005",
+      "name": "LMS — Learning Management",
+      "category": "Platform",
+      "type": "base",
+      "skus": [
+        {
+          "id": "sku-007",
+          "sku_code": "PLAT-LMS-LEARN",
+          "name": "LMS — Per Learner",
+          "pricing_model": "tiered_learners",
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [
+            { "learners": 100, "total_price": 5000, "price_per_learner": 50 },
+            { "learners": 500, "total_price": 17500, "price_per_learner": 35 },
+            { "learners": 1000, "total_price": 25000, "price_per_learner": 25 },
+            { "learners": 5000, "total_price": 75000, "price_per_learner": 15 }
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-006",
+      "name": "Sponsorship Management",
+      "category": "Platform",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-008",
+          "sku_code": "PLAT-SPONSOR",
+          "name": "Sponsorship Module",
+          "pricing_model": "tiered_sponsors",
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [
+            { "sponsors": 5, "total_price": 3000, "price_per_sponsor": 600 },
+            { "sponsors": 15, "total_price": 7500, "price_per_sponsor": 500 },
+            { "sponsors": 50, "total_price": 17500, "price_per_sponsor": 350 }
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-007",
+      "name": "Product Catalog Module",
+      "category": "Add-ons",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-009",
+          "sku_code": "ADD-PRODCAT",
+          "name": "Product Catalog — Tiered",
+          "pricing_model": "tiered_products",
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [
+            { "products": 10, "total_price": 2400, "price_per_product": 240 },
+            { "products": 50, "total_price": 9000, "price_per_product": 180 },
+            { "products": 200, "total_price": 24000, "price_per_product": 120 }
+          ],
+          "dependencies": [
+            { "depends_on_sku_id": "sku-001", "type": "soft", "message": "Product Catalog requires Core Platform for full functionality" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod-008",
+      "name": "Cloud Storage",
+      "category": "Storage & Infrastructure",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-010",
+          "sku_code": "INFRA-STORAGE",
+          "name": "Cloud Storage Plan",
+          "pricing_model": "tiered_storage",
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [
+            { "storage_gb": 50, "price": 600 },
+            { "storage_gb": 200, "price": 1800 },
+            { "storage_gb": 1000, "price": 6000 },
+            { "storage_gb": 5000, "price": 18000 }
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-009",
+      "name": "Custom Development",
+      "category": "Services",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-011",
+          "sku_code": "SVC-CUSTOM-DEV",
+          "name": "Custom Development",
+          "pricing_model": "custom",
+          "base_price": 0,
+          "currency": "USD",
+          "active": true,
+          "recurring": false,
+          "variants": [],
+          "volume_tiers": [],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-010",
+      "name": "API Access",
+      "category": "Add-ons",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-012",
+          "sku_code": "ADD-API",
+          "name": "API Access — Variable Calls",
+          "pricing_model": "variable",
+          "base_price": 0.005,
+          "variable_unit": "API calls (thousands)",
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [],
+          "dependencies": [
+            { "depends_on_sku_id": "sku-001", "type": "hard", "message": "API Access requires an active Core Platform License" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod-011",
+      "name": "Onboarding & Training",
+      "category": "Training",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-013",
+          "sku_code": "TRN-ONBOARD",
+          "name": "Onboarding Training",
+          "pricing_model": "deal_type_based",
+          "price_new": 5000,
+          "price_repeat": 2500,
+          "currency": "USD",
+          "active": true,
+          "recurring": false,
+          "variants": [],
+          "volume_tiers": [],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-012",
+      "name": "Premium Support",
+      "category": "Services",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-014",
+          "sku_code": "SVC-SUPPORT-PREM",
+          "name": "Premium Support Plan",
+          "pricing_model": "fixed",
+          "base_price": 12000,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [
+            { "id": "var-004", "name": "Business Hours", "price": 12000 },
+            { "id": "var-005", "name": "24/7 Support", "price": 24000 }
+          ],
+          "volume_tiers": [],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-013",
+      "name": "Data Migration",
+      "category": "Services",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-015",
+          "sku_code": "SVC-MIGRATION",
+          "name": "Data Migration Service",
+          "pricing_model": "variable",
+          "base_price": 500,
+          "variable_unit": "tables",
+          "currency": "USD",
+          "active": true,
+          "recurring": false,
+          "variants": [],
+          "volume_tiers": [],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "prod-014",
+      "name": "SSO Integration",
+      "category": "Add-ons",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-016",
+          "sku_code": "ADD-SSO",
+          "name": "SSO / SAML Integration",
+          "pricing_model": "fixed",
+          "base_price": 8000,
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [],
+          "dependencies": [
+            { "depends_on_sku_id": "sku-001", "type": "soft", "message": "SSO is typically paired with Core Platform seats" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod-015",
+      "name": "Compliance Add-on",
+      "category": "Add-ons",
+      "type": "addon",
+      "skus": [
+        {
+          "id": "sku-017",
+          "sku_code": "ADD-COMPLIANCE",
+          "name": "Compliance & Audit Pack",
+          "pricing_model": "tiered_fixed",
+          "currency": "USD",
+          "active": true,
+          "recurring": true,
+          "variants": [],
+          "volume_tiers": [
+            { "tier": "Starter", "total_price": 6000 },
+            { "tier": "Professional", "total_price": 15000 },
+            { "tier": "Enterprise", "total_price": 30000 }
+          ],
+          "dependencies": []
+        }
+      ]
+    }
+  ]
+}
