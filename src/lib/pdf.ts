@@ -49,8 +49,7 @@ export function exportQuotePDF(
     y += 4;
 
     const tableData = items.map(item => {
-      const unitPrice = getUnitPrice(item, deal.dealType);
-      const total = calculateLineTotal(item, yearAdj, applyAdj, deal.dealType);
+      const total = calculateLineTotal(item, yearAdj, yr, deal.dealType);
       const variant = item.selectedVariantId
         ? item.variants.find(v => v.id === item.selectedVariantId)?.name || '—'
         : '—';
