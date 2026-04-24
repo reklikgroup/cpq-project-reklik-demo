@@ -5,9 +5,12 @@ import { SkuBrowser } from '@/components/SkuBrowser';
 import { LiveQuote } from '@/components/LiveQuote';
 import { QuoteSummary } from '@/components/QuoteSummary';
 import { exportQuotePDF } from '@/lib/pdf';
+import { syncQuote } from '@/lib/hubspot';
+import { calculateLineTotal } from '@/lib/pricing';
 import catalogData from '@/data/products.json';
 import type { ProductCatalog, SKU } from '@/types/quote';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
 const catalog = catalogData as ProductCatalog;
 
@@ -41,12 +44,42 @@ const Index = () => {
     toast.success('PDF exported');
   };
 
-  const handleSyncHubSpot = () => {
+  const [syncing, setSyncing] = useState(false);
+  const handleSyncHubSpot = async () => {
     if (!state.deal.dealId) {
       toast.error('Please enter a Deal ID first');
       return;
     }
-    toast.info('HubSpot sync requires a backend proxy — configure /api/hubspot endpoint');
+    if (state.lineItems.length === 0) {
+      toast.error('Add at least one line item');
+      return;
+    }
+
+    const payload: { name: string; quantity: number; unitPrice: number; year: number; skuCode?: string }[] = [];
+    for (let yr = 1; yr <= state.deal.termYears; yr++) {
+      const items = getYearItems(yr);
+      const yearAdj = state.deal.yearAdjustments[yr];
+      for (const li of items) {
+        const total = calculateLineTotal(li, yearAdj, yr, state.deal.dealType);
+        payload.push({
+          name: `${li.productName} — ${li.skuName}`,
+          quantity: 1,
+          unitPrice: total,
+          year: yr,
+        });
+      }
+    }
+
+    setSyncing(true);
+    const t = toast.loading('Syncing to HubSpot...');
+    try {
+      const res = await syncQuote(state.deal.dealId, payload);
+      toast.success(`Synced: ${res.created} line items created, ${res.deleted} replaced`, { id: t });
+    } catch (err: any) {
+      toast.error(`Sync failed: ${err?.message || 'Unknown error'}`, { id: t });
+    } finally {
+      setSyncing(false);
+    }
   };
 
   return (
