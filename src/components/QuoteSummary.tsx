@@ -1,80 +1,141 @@
-import type { DealSetup } from '@/types/quote';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { FileDown, Upload, FilePlus } from 'lucide-react';
 import { formatCurrency } from '@/lib/pricing';
-import { FileDown, Upload } from 'lucide-react';
+import type { YearAdjustment } from '@/types/quote';
 
 interface QuoteSummaryProps {
-  deal: DealSetup;
+  termYears: number;
   getYearSubtotal: (year: number) => number;
+  yearAdjustments: Record<number, YearAdjustment>;
   totalContractValue: number;
   notes: string;
   onSetNotes: (notes: string) => void;
-  onExportPDF: () => void;
+  onExportPdf: () => void;
   onSyncHubSpot: () => void;
+  onCreateHubSpotQuote: () => void;
 }
 
 export function QuoteSummary({
-  deal,
+  termYears,
   getYearSubtotal,
+  yearAdjustments,
   totalContractValue,
   notes,
   onSetNotes,
-  onExportPDF,
+  onExportPdf,
   onSyncHubSpot,
+  onCreateHubSpotQuote,
 }: QuoteSummaryProps) {
-  return (
-    <div className="bg-card border rounded-lg p-5 space-y-4">
-      <h2 className="text-sm font-semibold uppercase tracking-wide">Step 3 — Summary</h2>
+  const years = Array.from({ length: termYears }, (_, i) => i + 1);
 
-      {/* Per-year subtotals */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {Array.from({ length: deal.termYears }, (_, i) => i + 1).map(yr => {
-          const sub = getYearSubtotal(yr);
-          const adj = deal.yearAdjustments[yr];
+  return (
+    <div className="bg-card rounded-lg border shadow-sm p-6 space-y-4">
+      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        Step 3 — Quote Summary
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {years.map((year) => {
+          const subtotal = getYearSubtotal(year);
+          const adj = yearAdjustments[year];
+          const discMode = adj.discountMode ?? 'pct';
+          const incMode = adj.increaseMode ?? 'pct';
+          const discLabel = discMode === 'pct'
+            ? (adj.discountPct > 0 ? `Disc: ${adj.discountPct}%` : '')
+            : ((adj.discountAmt || 0) > 0 ? `Disc: ${formatCurrency(adj.discountAmt || 0)}` : '');
+          const incLabel = incMode === 'pct'
+            ? (adj.increasePct > 0 ? `Inc: ${adj.increasePct}%` : '')
+            : ((adj.increaseAmt || 0) > 0 ? `Inc: ${formatCurrency(adj.increaseAmt || 0)}` : '');
           return (
-            <div key={yr} className="bg-muted/30 rounded-md p-3">
-              <p className="text-[10px] text-muted-foreground font-medium uppercase">Year {yr}</p>
-              <p className="text-lg font-bold">{formatCurrency(sub)}</p>
-              {yr > 1 && (adj.discountPct > 0 || adj.increasePct > 0) && (
-                <p className="text-[10px] text-muted-foreground">
-                  {adj.increasePct > 0 && `+${adj.increasePct}% increase`}
-                  {adj.increasePct > 0 && adj.discountPct > 0 && ' / '}
-                  {adj.discountPct > 0 && `-${adj.discountPct}% discount`}
-                </p>
-              )}
+            <div key={year} className="rounded-lg border bg-muted/30 p-4 space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Year {year}
+              </p>
+              <p className="text-xl font-bold text-foreground tabular-nums">
+                {formatCurrency(subtotal)}
+              </p>
+              <div className="flex gap-3 text-[11px] text-muted-foreground">
+                {discLabel && <span>{discLabel}</span>}
+                {incLabel && <span>{incLabel}</span>}
+              </div>
             </div>
           );
         })}
       </div>
 
-      {/* TCV */}
-      <div className="bg-primary/5 border border-primary/20 rounded-md p-4 text-center">
-        <p className="text-xs text-primary font-medium uppercase">Total Contract Value</p>
-        <p className="text-2xl font-bold text-primary">{formatCurrency(totalContractValue)}</p>
+      <div className="flex items-center justify-between pt-2 border-t">
+        <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          Total Contract Value
+        </span>
+        <span className="text-2xl font-bold text-foreground tabular-nums">
+          {formatCurrency(totalContractValue)}
+        </span>
       </div>
 
-      {/* Notes */}
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">Notes</Label>
+      {(() => {
+        const tcv = totalContractValue;
+        const acv = termYears >= 1 ? tcv / termYears : tcv;
+        const months = termYears * 12;
+        const mrr = months > 0 ? tcv / months : 0;
+        const dealAmount = acv;
+        const arr = acv;
+        const metrics = [
+          { label: 'TCV', value: tcv, hint: 'Total Contract Value' },
+          { label: 'ACV', value: acv, hint: termYears >= 1 ? `TCV ÷ ${termYears} yr${termYears > 1 ? 's' : ''}` : 'TCV (term < 1 yr)' },
+          { label: 'MRR', value: mrr, hint: `TCV ÷ ${months} mo` },
+          { label: 'Deal Amount', value: dealAmount, hint: '= ACV' },
+          { label: 'ARR', value: arr, hint: '= ACV' },
+        ];
+        return (
+          <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Deal Metrics — please confirm before sync
+              </p>
+              <span className="text-[11px] text-muted-foreground">
+                Term: {termYears} yr{termYears > 1 ? 's' : ''} ({months} mo)
+              </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {metrics.map((m) => (
+                <div key={m.label} className="rounded-md border bg-card p-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {m.label}
+                  </p>
+                  <p className="text-base font-bold text-foreground tabular-nums mt-0.5">
+                    {formatCurrency(m.value)}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{m.hint}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
+      <div className="space-y-1.5">
+        <label className="text-xs text-muted-foreground">Notes</label>
         <Textarea
           value={notes}
-          onChange={e => onSetNotes(e.target.value)}
-          placeholder="Internal notes..."
-          className="text-sm min-h-[60px]"
+          onChange={(e) => onSetNotes(e.target.value)}
+          placeholder="Add any notes for this quote..."
+          className="min-h-[80px] text-sm"
         />
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-2">
-        <Button onClick={onExportPDF} variant="outline" className="flex-1 gap-2">
+      <div className="flex gap-3 pt-2">
+        <Button onClick={onExportPdf} variant="outline" className="gap-2">
           <FileDown className="h-4 w-4" />
           Export PDF
         </Button>
-        <Button onClick={onSyncHubSpot} className="flex-1 gap-2">
+        <Button onClick={onSyncHubSpot} className="gap-2">
           <Upload className="h-4 w-4" />
           Sync to HubSpot
+        </Button>
+        <Button onClick={onCreateHubSpotQuote} variant="secondary" className="gap-2">
+          <FilePlus className="h-4 w-4" />
+          Create HubSpot Quote
         </Button>
       </div>
     </div>

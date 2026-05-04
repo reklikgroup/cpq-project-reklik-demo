@@ -1,58 +1,101 @@
-// HubSpot API client — calls through /api/hubspot proxy
-// In production, this would hit a Vercel serverless function or Supabase edge function
-
-const API_BASE = '/api/hubspot';
+const HUBSPOT_PROXY = '/api/hubspot';
 
 export async function fetchDealLineItems(dealId: string) {
-  try {
-    const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'fetch_line_items', dealId }),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  } catch (err) {
-    console.error('HubSpot fetch error:', err);
-    throw err;
-  }
+  const res = await fetch(HUBSPOT_PROXY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'fetch_line_items', deal_id: dealId }),
+  });
+  if (!res.ok) throw new Error(`HubSpot API error: ${res.status}`);
+  return res.json();
 }
 
-export async function syncQuote(dealId: string, lineItems: any[]) {
-  try {
-    const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'sync_quote', dealId, lineItems }),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  } catch (err) {
-    console.error('HubSpot sync error:', err);
-    throw err;
+export interface SyncLineItem {
+  sku_name: string;
+  quantity: number;
+  unit_price: number;
+  discount_pct: number;
+  final_price: number;
+  year: number;
+  sku_group?: string;
+  sku_code?: string;
+  description?: string;
+  base_price?: number;
+  product_category?: string;
+  event_name?: string;
+  event_start_date?: number | null; // epoch ms (HubSpot date property)
+  event_end_date?: number | null;
+  term_months?: number; // converted to ISO 8601 duration server-side
+  hubspot_line_item_id?: string;
+}
+
+export interface DealMetrics {
+  tcv: number;
+  acv: number;
+  arr: number;
+  mrr: number;
+}
+
+export async function syncQuote(
+  dealId: string,
+  lineItems: SyncLineItem[],
+  dealMetrics?: DealMetrics
+) {
+  const res = await fetch(HUBSPOT_PROXY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'sync_quote',
+      deal_id: dealId,
+      line_items: lineItems,
+      deal_metrics: dealMetrics,
+    }),
+  });
+  if (!res.ok) throw new Error(`HubSpot API error: ${res.status}`);
+  return res.json();
+}
+
+export async function createQuote(
+  dealId: string,
+  lineItems: SyncLineItem[],
+  quoteName?: string,
+  expirationDays?: number
+) {
+  const res = await fetch(HUBSPOT_PROXY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'create_quote',
+      deal_id: dealId,
+      line_items: lineItems,
+      quote_name: quoteName,
+      expiration_days: expirationDays,
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body?.error || `HubSpot API error: ${res.status}`);
   }
+  return res.json();
 }
 
 export async function syncUpgrade(
   upgradeDealId: string,
   renewalDealId: string,
-  upgradeLineItems: any[]
+  upgradeLineItems: SyncLineItem[],
+  dealMetrics?: DealMetrics
 ) {
-  try {
-    const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'sync_upgrade',
-        upgradeDealId,
-        renewalDealId,
-        upgradeLineItems,
-      }),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  } catch (err) {
-    console.error('HubSpot sync upgrade error:', err);
-    throw err;
-  }
+  const res = await fetch(HUBSPOT_PROXY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'sync_upgrade',
+      upgrade_deal_id: upgradeDealId,
+      renewal_deal_id: renewalDealId,
+      upgrade_line_items: upgradeLineItems,
+      deal_metrics: dealMetrics,
+    }),
+  });
+  if (!res.ok) throw new Error(`HubSpot API error: ${res.status}`);
+  return res.json();
 }

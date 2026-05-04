@@ -1,5 +1,8 @@
 export type DealType = 'new_business' | 'renewal' | 'mid_term_upgrade';
 
+export type SkuGroup = 'Software' | 'Services' | 'Implementation' | 'Travel' | 'Other';
+export const SKU_GROUPS: SkuGroup[] = ['Software', 'Services', 'Implementation', 'Travel', 'Other'];
+
 export interface VolumeTier {
   min_qty: number;
   max_qty: number;
@@ -33,11 +36,14 @@ export interface SKU {
   active: boolean;
   recurring: boolean;
   variants: Variant[];
-  volume_tiers: any[];
+  volume_tiers: any[]; // flexible shape per pricing model
   dependencies: Dependency[];
   variable_unit?: string;
   price_new?: number;
   price_repeat?: number;
+  description?: string;
+  notes?: string;
+  sku_group?: string;
 }
 
 export interface Product {
@@ -53,31 +59,38 @@ export interface ProductCatalog {
   products: Product[];
 }
 
+export type AdjustmentMode = 'pct' | 'amount';
+
 export interface YearAdjustment {
   discountPct: number;
   increasePct: number;
+  discountAmt?: number;
+  increaseAmt?: number;
+  discountMode?: AdjustmentMode;
+  increaseMode?: AdjustmentMode;
   applyToAll: boolean;
-}
-
-export interface LineYearOverride {
-  manualDiscountPct?: number;
-  manualIncreasePct?: number;
-  unitPriceOverride?: number | null;
 }
 
 export interface QuoteLineItem {
   id: string;
+  year: number;
+  sourceLineItemId: string;
   skuId: string;
   skuName: string;
   productName: string;
+  category?: string;
   pricingModel: string;
   quantity: number;
   selectedVariantId: string | null;
-  selectedTierIndex: number | null;
+  selectedTierIndex: number | null; // for tiered pricing models
   baseUnitPrice: number;
   unitPriceOverride: number | null;
   manualDiscountPct: number;
   manualIncreasePct: number;
+  manualDiscountAmt?: number;
+  manualIncreaseAmt?: number;
+  manualDiscountMode?: AdjustmentMode;
+  manualIncreaseMode?: AdjustmentMode;
   yearOverride: boolean;
   recurring: boolean;
   variants: Variant[];
@@ -85,18 +98,25 @@ export interface QuoteLineItem {
   dependencies: Dependency[];
   hubspotLineItemId?: string;
   source: 'catalog' | 'hubspot';
+  skuCode?: string;
   variableUnit?: string;
   priceNew?: number;
   priceRepeat?: number;
-  yearOverrides: Record<number, LineYearOverride>;
+  description?: string;
+  skuGroup?: SkuGroup | '';
+  lineItemStartDate?: string | null; // ISO yyyy-MM-dd
+  lineItemEndDate?: string | null;   // ISO yyyy-MM-dd
 }
 
 export interface DealSetup {
   dealType: DealType;
   dealId: string;
   renewalDealId: string;
-  termYears: 1 | 2 | 3;
+  termYears: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   yearAdjustments: Record<number, YearAdjustment>;
+  contractStartDate: string | null; // ISO yyyy-MM-dd
+  contractEndDate: string | null;   // ISO yyyy-MM-dd
+  eventNames: Record<number, string>; // event name per year
 }
 
 export interface QuoteState {
