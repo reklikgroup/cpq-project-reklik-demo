@@ -1,68 +1,84 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import type { QuoteLineItem, DealSetup, YearAdjustment } from '@/types/quote';
-import { calculateLineTotal, getUnitPrice, formatCurrency } from './pricing';
+import type { QuoteState, QuoteLineItem, YearAdjustment } from '@/types/quote';
+import { getUnitPrice, calculateLineTotal, shouldApplyYearAdj, formatCurrency } from '@/lib/pricing';
 
-export function exportQuotePDF(
-  deal: DealSetup,
-  lineItems: QuoteLineItem[],
-  notes: string,
+export function exportQuotePdf(
+  state: QuoteState,
   getYearItems: (year: number) => QuoteLineItem[],
   getYearSubtotal: (year: number) => number,
   totalContractValue: number
 ) {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
+  let y = 20;
 
   // Header
-  doc.setFillColor(14, 116, 144); // teal
-  doc.rect(0, 0, pageWidth, 35, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(22);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Quote', 14, 22);
   doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.text('QuoteBuilder CPQ', pageWidth - 14, 22, { align: 'right' });
+  doc.setTextColor(120);
+  doc.text('COMPANY LOGO', 14, y);
+
+  doc.setFontSize(18);
+  doc.setTextColor(30);
+  doc.text('Quote', pageWidth - 14, y, { align: 'right' });
+  y += 12;
 
   // Meta
-  let y = 45;
-  doc.setTextColor(50, 50, 50);
-  doc.setFontSize(10);
+  doc.setFontSize(9);
+  doc.setTextColor(100);
+  const dealTypeLabel =
+    state.deal.dealType === 'new_business' ? 'New Business' :
+    state.deal.dealType === 'renewal' ? 'Renewal' : 'Mid-Term Upgrade';
+
   doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, y);
-  doc.text(`Deal ID: ${deal.dealId || 'N/A'}`, 14, y + 6);
-  doc.text(`Deal Type: ${deal.dealType.replace(/_/g, ' ')}`, 14, y + 12);
-  doc.text(`Term Length: ${deal.termYears} Year${deal.termYears > 1 ? 's' : ''}`, 14, y + 18);
-  y += 30;
+  doc.text(`Deal ID: ${state.deal.dealId}`, 14, y + 5);
+  doc.text(`Deal Type: ${dealTypeLabel}`, 14, y + 10);
+  doc.text(`Term: ${state.deal.termYears} Year${state.deal.termYears > 1 ? 's' : ''}`, 14, y + 15);
+  y += 28;
 
-  // Tables per year
-  for (let yr = 1; yr <= deal.termYears; yr++) {
-    const items = getYearItems(yr);
-    if (items.length === 0) continue;
+  const years = Array.from({ length: state.deal.termYears }, (_, i) => i + 1);
 
-    const yearAdj = deal.yearAdjustments[yr] || { discountPct: 0, increasePct: 0, applyToAll: true };
+  for (const year of years) {
+    const items = getYearItems(year);
+    const adj = state.deal.yearAdjustments[year];
 
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(14, 116, 144);
-    doc.text(`Year ${yr}`, 14, y);
+    doc.setFontSize(12);
+    doc.setTextColor(30);
+    doc.text(`Year ${year}`, 14, y);
     y += 4;
 
-    const tableData = items.map(item => {
-      const total = calculateLineTotal(item, yearAdj, yr, deal.dealType);
-      const variant = item.selectedVariantId
+    const rows = items.map((item) => {
+      const applyAdj = shouldApplyYearAdj(item, adj);
+      const unitPrice = getUnitPrice(item, state.deal.dealType);
+      const total = calculateLineTotal(item, adj, applyAdj, state.deal.dealType);
+      const variantName = item.selectedVariantId
         ? item.variants.find(v => v.id === item.selectedVariantId)?.name || '—'
         : '—';
-      const oneTime = !item.recurring && yr === 1 ? ' (One-time)' : '';
+
+      let adjText = '—';
+      if (applyAdj) {
+        const parts: string[] = [];
+        const incMode = adj.increaseMode ?? 'pct';
+        const discMode = adj.discountMode ?? 'pct';
+        if (incMode === 'pct' && adj.increasePct > 0) parts.push(`+${adj.increasePct}%`);
+        if (incMode === 'amount' && (adj.increaseAmt || 0) > 0) parts.push(`+${formatCurrency(adj.increaseAmt || 0)}`);
+        if (discMode === 'pct' && adj.discountPct > 0) parts.push(`-${adj.discountPct}%`);
+        if (discMode === 'amount' && (adj.discountAmt || 0) > 0) parts.push(`-${formatCurrency(adj.discountAmt || 0)}`);
+        if (parts.length) adjText = parts.join(', ');
+      }
+
+      const skuLabel = !item.recurring && year === 1
+        ? `${item.skuName} (One-time fee)`
+        : item.skuName;
 
       return [
-        item.skuName + oneTime,
-        variant,
-        item.pricingModel === 'per_seat' || item.pricingModel === 'variable' ? item.quantity.toString() : '1',
-        formatCurrency(getUnitPrice(item, deal.dealType, yr)),
-        yearAdj.increasePct || yearAdj.discountPct ? `+${yearAdj.increasePct}% / -${yearAdj.discountPct}%` : '—',
-        item.manualIncreasePct ? `+${item.manualIncreasePct}%` : '—',
-        item.manualDiscountPct ? `-${item.manualDiscountPct}%` : '—',
+        skuLabel,
+        variantName,
+        item.quantity.toString(),
+        formatCurrency(unitPrice),
+        adjText,
+        (item.manualIncreasePct || 0) > 0 ? `+${item.manualIncreasePct}%` : '—',
+        item.manualDiscountPct > 0 ? `${item.manualDiscountPct}%` : '—',
         formatCurrency(total),
       ];
     });
@@ -70,40 +86,40 @@ export function exportQuotePDF(
     autoTable(doc, {
       startY: y,
       head: [['SKU', 'Variant', 'Qty', 'Unit Price', 'Yr Adj', 'Inc %', 'Disc %', 'Total']],
-      body: tableData,
-      foot: [['', '', '', '', '', '', 'Subtotal:', formatCurrency(getYearSubtotal(yr))]],
-      theme: 'grid',
-      headStyles: { fillColor: [14, 116, 144], textColor: 255, fontSize: 8 },
+      body: rows,
+      theme: 'striped',
+      headStyles: { fillColor: [14, 116, 144], fontSize: 8 },
       bodyStyles: { fontSize: 8 },
-      footStyles: { fillColor: [240, 240, 240], textColor: [30, 30, 30], fontStyle: 'bold', fontSize: 9 },
       margin: { left: 14, right: 14 },
+      foot: [[
+        { content: `Year ${year} Subtotal`, colSpan: 7, styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: formatCurrency(getYearSubtotal(year)), styles: { fontStyle: 'bold' } },
+      ]],
     });
 
     y = (doc as any).lastAutoTable.finalY + 10;
 
-    if (y > 250) {
+    if (y > 260) {
       doc.addPage();
       y = 20;
     }
   }
 
-  // TCV
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(14, 116, 144);
-  doc.text(`Total Contract Value: ${formatCurrency(totalContractValue)}`, 14, y + 5);
-  y += 15;
+  // Total
+  doc.setFontSize(12);
+  doc.setTextColor(30);
+  doc.text(`Total Contract Value: ${formatCurrency(totalContractValue)}`, 14, y);
+  y += 10;
 
   // Notes
-  if (notes) {
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(80, 80, 80);
+  if (state.notes) {
+    doc.setFontSize(9);
+    doc.setTextColor(80);
     doc.text('Notes:', 14, y);
-    y += 6;
-    const splitNotes = doc.splitTextToSize(notes, pageWidth - 28);
-    doc.text(splitNotes, 14, y);
+    y += 5;
+    const lines = doc.splitTextToSize(state.notes, pageWidth - 28);
+    doc.text(lines, 14, y);
   }
 
-  doc.save(`quote-${deal.dealId || 'draft'}-${Date.now()}.pdf`);
+  doc.save(`quote-${state.deal.dealId || 'draft'}.pdf`);
 }
