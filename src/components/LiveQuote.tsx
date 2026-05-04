@@ -408,15 +408,11 @@ export function LiveQuote({
                 <table className="text-sm min-w-[1800px] w-full">
                   <thead>
                     <tr className="border-b bg-muted/30">
-                      <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-72">Event Name</th>
                       <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground">SKU</th>
                       <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-32">Group</th>
                       <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-96">Description</th>
                       <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-44">Tier / Variant</th>
                       <th className="text-center px-3 py-2 text-xs font-medium text-muted-foreground w-20">Qty</th>
-                      <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground w-32">Start Date</th>
-                      <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground w-32">End Date</th>
-                      <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground w-16">Term (mo)</th>
                       <th className="text-right px-3 py-2 text-xs font-medium text-muted-foreground w-32">Unit $</th>
                       <th className="text-center px-3 py-2 text-xs font-medium text-muted-foreground w-16">Yr Adj</th>
                       {!adj.applyToAll && (
@@ -440,14 +436,6 @@ export function LiveQuote({
 
                       return (
                         <tr key={`${item.id}-y${year}`} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
-                          <td className="px-3 py-2 align-top">
-                            <Input
-                              value={eventNames[year] ?? ''}
-                              onChange={(e) => onSetEventName(year, e.target.value)}
-                              placeholder="Event name…"
-                              className="h-7 text-xs"
-                            />
-                          </td>
                           <td className="px-3 py-2">
                             {item.skuId ? (
                               <div className="flex items-center flex-wrap">
@@ -557,40 +545,6 @@ export function LiveQuote({
                                 {isTieredModel(item.pricingModel) ? '—' : item.quantity}
                               </span>
                             )}
-                          </td>
-                          <td className="px-2 py-2 text-center">
-                            <Input
-                              type="date"
-                              value={item.lineItemStartDate ?? ''}
-                              onChange={(e) =>
-                                onUpdateLineItem(item.id, { lineItemStartDate: e.target.value || null })
-                              }
-                              className="h-7 w-32 text-xs px-2"
-                            />
-                          </td>
-                          <td className="px-2 py-2 text-center">
-                            <Input
-                              type="date"
-                              value={item.lineItemEndDate ?? ''}
-                              onChange={(e) =>
-                                onUpdateLineItem(item.id, { lineItemEndDate: e.target.value || null })
-                              }
-                              className="h-7 w-32 text-xs px-2"
-                            />
-                          </td>
-                          <td className="px-2 py-2 text-center">
-                            {(() => {
-                              const months = getTermMonths(item.lineItemStartDate, item.lineItemEndDate);
-                              const isProrated = months !== null && months < 12;
-                              return (
-                                <span
-                                  className={`text-xs tabular-nums ${isProrated ? 'text-amber-600 font-medium' : 'text-muted-foreground'}`}
-                                  title={isProrated ? `Prorated: annual price × ${months}/12` : months !== null ? 'Full annual price' : 'Set dates to compute term'}
-                                >
-                                  {months !== null ? months : '—'}
-                                </span>
-                              );
-                            })()}
                           </td>
                           <td className="px-3 py-2">
                             <UnitPriceCell item={item} year={year} onUpdateLineItem={onUpdateLineItem} dealType={dealType} />
