@@ -281,12 +281,10 @@ export default function QuoteBuilderPage() {
             lineItems={state.lineItems}
             termYears={state.deal.termYears}
             yearAdjustments={state.deal.yearAdjustments}
-            eventNames={state.deal.eventNames}
             dealType={state.deal.dealType}
             getYearItems={getYearItems}
             onUpdateLineItem={updateLineItem}
             onRemoveLineItem={removeLineItem}
-            onSetEventName={setEventName}
             onAddBlankLineItem={addBlankLineItem}
             skuIdsInQuote={skuIdsInQuote}
           />

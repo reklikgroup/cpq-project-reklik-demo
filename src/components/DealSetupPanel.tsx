@@ -325,17 +325,6 @@ export function DealSetupPanel({
                 <span className="text-xs font-semibold text-foreground">
                   Year {year}
                 </span>
-                <div className="space-y-1">
-                  <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                    Event Name
-                  </Label>
-                  <Input
-                    value={deal.eventNames?.[year] ?? ''}
-                    onChange={(e) => onSetEventName(year, e.target.value)}
-                    placeholder="e.g. Annual Conference 2026"
-                    className="h-8 text-sm"
-                  />
-                </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
                     <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
