@@ -18,12 +18,10 @@ interface LiveQuoteProps {
   lineItems: QuoteLineItem[];
   termYears: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   yearAdjustments: Record<number, YearAdjustment>;
-  eventNames: Record<number, string>;
   dealType: DealType;
   getYearItems: (year: number) => QuoteLineItem[];
   onUpdateLineItem: (id: string, updates: Partial<QuoteLineItem>) => void;
   onRemoveLineItem: (id: string) => void;
-  onSetEventName: (year: number, name: string) => void;
   onAddBlankLineItem: (year: number) => void;
   skuIdsInQuote: string[];
 }
@@ -323,8 +321,8 @@ function CategoryBreakdown({
 }
 
 export function LiveQuote({
-  lineItems, termYears, yearAdjustments, eventNames, dealType,
-  getYearItems, onUpdateLineItem, onRemoveLineItem, onSetEventName, onAddBlankLineItem, skuIdsInQuote,
+  lineItems, termYears, yearAdjustments, dealType,
+  getYearItems, onUpdateLineItem, onRemoveLineItem, onAddBlankLineItem, skuIdsInQuote,
 }: LiveQuoteProps) {
   const [collapsed, setCollapsed] = useState<Record<number, boolean>>({});
   const [viewMode, setViewMode] = useState<ViewMode>('year');
